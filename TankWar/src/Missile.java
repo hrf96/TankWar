@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.List;
 
 
 
@@ -66,14 +67,34 @@ public class Missile {
 			y+=YSPEED;
 			break;
 		}
+		
+		
 		if(x<0||y<0||x>TankClient.GAME_WIDTH+Missile.WIDTH||y>TankClient.GAME_HEIGHT+Missile.HEIGHT) tc.getMissiles().remove(this);
-		hitTank(tc.getEnemyTank());
+		
+		
+		
+		hitTanks(tc.getEnemies());
+		
 	}
 	
+	private boolean hitTanks(List<Tank> tanks) {
+		for(int i=0;i<tanks.size();i++){
+			if(hitTank(tanks.get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	public boolean hitTank(Tank tank){
 		if(tank.getRectangle().intersects(this.getRectangle())&&tank.isLive()) {
-			live = false;
+			this.live = false;
+			this.tc.getMissiles().remove(this);
 			tank.setLive(false);
+			this.tc.getEnemies().remove(tank);
+			Explode explode = new Explode(this.x,this.y,this.tc);
+			tc.getExplodes().add(explode);
 			return true;
 		}
 		return false;

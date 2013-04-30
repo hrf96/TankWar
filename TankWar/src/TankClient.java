@@ -16,13 +16,22 @@ public class TankClient extends Frame{
 	public static final int GAME_WIDTH = 640;
 	public static final int GAME_HEIGHT = 480;
 	private Tank myTank = new Tank(50,50,true,this);
-	private Tank enemyTank = new Tank(100,100,false,this);
-	private Explode e = new Explode(200,200,this);
+	private List<Tank> enemies = new ArrayList<Tank>();
+	private List<Explode> explodes = new ArrayList<Explode>();
 	private List<Missile> missiles = new ArrayList<Missile>();
 	private Image offScreenImage = null;
 	
+
+	
+	
 	public void paint(Graphics g) {
 		g.drawString("Missiles count:" + missiles.size(), 10, 50);
+		g.drawString("Explodes count:" + explodes.size(), 10, 70);
+		g.drawString("Enemies count:" + enemies.size(), 10, 90);
+		
+		
+		myTank.draw(g);
+		
 		//循环画出子弹
 		for(int i=0;i<missiles.size();i++){
 			Missile m = missiles.get(i);
@@ -30,11 +39,23 @@ public class TankClient extends Frame{
 				m.draw(g);
 			}
 		}
-		e.draw(g);
-		myTank.draw(g);
-		if(enemyTank.isLive()){
-			enemyTank.draw(g);
+		//循环画出爆炸
+		for(int i=0;i<explodes.size();i++){
+			Explode explode = explodes.get(i);
+			explode.draw(g);
 		}
+		
+		
+		
+		//循环画出敌人坦克
+		for(int i=0;i<enemies.size();i++){
+			Tank enemy = enemies.get(i);
+			if(enemy.isLive()){
+				enemy.draw(g);
+			}
+		}
+		
+		
 	}
 
 	public void update(Graphics g) {
@@ -43,7 +64,7 @@ public class TankClient extends Frame{
 		}
 		Graphics gOffScreen = offScreenImage.getGraphics();
 		Color c = gOffScreen.getColor();
-		gOffScreen.setColor(Color.GREEN);
+		gOffScreen.setColor(Color.GRAY);
 		gOffScreen.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
 		gOffScreen.setColor(c);
 		paint(gOffScreen);
@@ -51,6 +72,13 @@ public class TankClient extends Frame{
 	}
 	
 	public void lanchFrame(){
+		enemies.add(new Tank(50,100,false,this));
+		enemies.add(new Tank(150,100,false,this));
+		enemies.add(new Tank(250,100,false,this));
+		enemies.add(new Tank(350,100,false,this));
+		enemies.add(new Tank(450,100,false,this));
+		enemies.add(new Tank(550,100,false,this));
+		
 		this.setLocation(100, 100);
 		this.setSize(GAME_WIDTH, GAME_HEIGHT);
 		this.setTitle("坦克大战");
@@ -61,7 +89,7 @@ public class TankClient extends Frame{
 		});
 		this.addKeyListener(new KeyMonitor());
 		this.setResizable(false);
-		this.setBackground(Color.GREEN);
+		this.setBackground(Color.GRAY);
 		this.setVisible(true);
 		new Thread(new PaintThread()).start();
 	}
@@ -72,9 +100,6 @@ public class TankClient extends Frame{
 		return myTank;
 	}
 
-	public Tank getEnemyTank() {
-		return enemyTank;
-	}
 
 	public List<Missile> getMissiles() {
 		return missiles;
@@ -89,7 +114,7 @@ public class TankClient extends Frame{
 		public void run() {
 			while(true){
 				try {
-					Thread.sleep(500);
+					Thread.sleep(20);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -114,6 +139,14 @@ public class TankClient extends Frame{
 	public static void main(String[] args) {
 		TankClient tc = new TankClient();
 		tc.lanchFrame();
+	}
+
+	public List<Explode> getExplodes() {
+		return explodes;
+	}
+
+	public List<Tank> getEnemies() {
+		return enemies;
 	}
 	
 	

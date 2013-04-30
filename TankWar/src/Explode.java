@@ -18,7 +18,10 @@ public class Explode {
 	
 	//获得画板，在画板上画出爆炸
 	public void draw(Graphics g){
-		if(!live) return;
+		if(!live){
+			tc.getExplodes().remove(this);
+			return;
+		}
 		
 		if(step==diameter.length){
 			live = false;
