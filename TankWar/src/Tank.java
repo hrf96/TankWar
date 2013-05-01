@@ -6,6 +6,7 @@ import java.util.Random;
 
 
 public class Tank {
+	private int id;
 	public static final int XSPEED = 5;
 	public static final int YSPEED = 5;
 	public static final int WIDTH = 30;
@@ -43,6 +44,7 @@ public class Tank {
 		
 		if(!this.live) return;
 		g.fillOval(x, y, WIDTH, HEIGHT);
+		g.drawString("id:" + id, x, y - 10);
 		g.setColor(c);
 		move();
 		switch(ptDir){
@@ -198,5 +200,13 @@ public class Tank {
 
 	public boolean isGood() {
 		return good;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 }

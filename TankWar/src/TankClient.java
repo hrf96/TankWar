@@ -20,7 +20,7 @@ public class TankClient extends Frame{
 	private List<Explode> explodes = new ArrayList<Explode>();
 	private List<Missile> missiles = new ArrayList<Missile>();
 	private Image offScreenImage = null;
-	
+	private NetClient nc = new NetClient(this);
 
 	
 	
@@ -85,6 +85,8 @@ public class TankClient extends Frame{
 		this.setBackground(Color.GRAY);
 		this.setVisible(true);
 		new Thread(new PaintThread()).start();
+		
+		nc.connect("127.0.0.1", TankServer.TCP_PORT);
 	}
 	
 	
