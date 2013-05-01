@@ -114,12 +114,24 @@ public class Missile {
 
 	public boolean hitTank(Tank tank){
 		if(this.isLive() && tank.getRectangle().intersects(this.getRectangle()) && tank.isLive() && this.good != tank.isGood()) {
+			if(tank.isGood()){
+				tank.setLife(tank.getLife()-20);
+				if(tank.getLife()<=0){
+					tank.setLive(false);
+					Explode explode = new Explode(this.x,this.y,this.tc);
+					tc.getExplodes().add(explode);
+				}
+			}else{
+				tank.setLife(tank.getLife()-50);
+				if(tank.getLife()<=0){
+					tank.setLive(false);
+					this.tc.getEnemies().remove(tank);
+					Explode explode = new Explode(this.x,this.y,this.tc);
+					tc.getExplodes().add(explode);
+				}
+			}
 			this.live = false;
 			this.tc.getMissiles().remove(this);
-			tank.setLive(false);
-			this.tc.getEnemies().remove(tank);
-			Explode explode = new Explode(this.x,this.y,this.tc);
-			tc.getExplodes().add(explode);
 			return true;
 		}
 		return false;

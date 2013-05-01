@@ -9,6 +9,8 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+//import Tank.Direction;
+
 
 public class TankClient extends Frame{
 
@@ -20,6 +22,7 @@ public class TankClient extends Frame{
 	private List<Explode> explodes = new ArrayList<Explode>();
 	private List<Missile> missiles = new ArrayList<Missile>();
 	private List<Wall> walls = new ArrayList<Wall>();
+	private Blood blood = new Blood();
 	private Image offScreenImage = null;
 	
 
@@ -29,6 +32,8 @@ public class TankClient extends Frame{
 		g.drawString("Missiles count:" + missiles.size(), 10, 50);
 		g.drawString("Explodes count:" + explodes.size(), 10, 70);
 		g.drawString("Enemies count:" + enemies.size(), 10, 90);
+		g.drawString("Blood:" + myTank.getLife(), 10, 110);
+		
 		
 		//循环画出墙
 		for(int i=0;i<walls.size();i++){
@@ -53,6 +58,12 @@ public class TankClient extends Frame{
 		}
 		
 		
+		if(enemies.size()<=0){
+			for(int i=0;i<6;i++){
+				enemies.add(new Tank(50 + i * 100,100,false,Tank.Direction.D,this));
+			}
+		}
+		
 		
 		//循环画出敌人坦克
 		for(int i=0;i<enemies.size();i++){
@@ -62,6 +73,10 @@ public class TankClient extends Frame{
 			}
 		}
 		
+		//画出血块来
+		if(blood.isLive()){
+			blood.draw(g);
+		}
 		
 	}
 
@@ -139,6 +154,9 @@ public class TankClient extends Frame{
 	
 	private class KeyMonitor extends KeyAdapter{
 		public void keyReleased(KeyEvent e) {
+			if(e.getKeyCode() == KeyEvent.VK_F2){
+				myTank = new Tank(50,50,true,Tank.Direction.STOP,TankClient.this);
+			}
 			myTank.keyReleased(e);
 		}
 
@@ -164,6 +182,10 @@ public class TankClient extends Frame{
 
 	public List<Wall> getWalls() {
 		return walls;
+	}
+
+	public Blood getBlood() {
+		return blood;
 	}
 	
 	

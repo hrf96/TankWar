@@ -9,6 +9,7 @@ public class Wall {
 	private int width;
 	private int height;
 	private boolean live = true;
+	@SuppressWarnings("unused")
 	private TankClient tc;
 	private Color color = Color.ORANGE;
 	

@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -19,7 +20,8 @@ public class Tank {
 	private boolean good;
 	private boolean live = true;
 	private int step = random.nextInt(12) + 1;
-
+	private int life =100;
+	private BloodBar bb = new BloodBar();
 	enum Direction {L,LU,U,RU,R,RD,D,LD,STOP};
 	private Direction dir = Direction.STOP;
 	private Direction ptDir = Direction.R;
@@ -50,7 +52,7 @@ public class Tank {
 		if(!this.live) return;
 		g.fillOval(x, y, WIDTH, HEIGHT);
 		g.setColor(c);
-		move();
+		bb.draw(g);
 		switch(ptDir){
 		case L:
 			g.drawLine(x + Tank.WIDTH/2, y + Tank.HEIGHT/2, x, y + Tank.HEIGHT/2);
@@ -77,6 +79,7 @@ public class Tank {
 			g.drawLine(x + Tank.WIDTH/2, y + Tank.HEIGHT/2, x, y + Tank.HEIGHT);
 			break;
 		}
+		move();
 	}
 	
 	
@@ -125,6 +128,8 @@ public class Tank {
 		//防止坦克互相穿越
 		collidesWithTanks(tc.getEnemies());
 		collidesWithTank(tc.getMyTank());
+		//吃血
+		eatBlood(tc.getBlood());
 		//设置敌方坦克自动行走和自动发射子弹
 		if(!good){
 			Direction[] dirs = Direction.values();
@@ -145,6 +150,18 @@ public class Tank {
 	
 	
 	
+	private boolean eatBlood(Blood blood) {
+		if(this.isLive() && blood.isLive() && blood.getRectangle().intersects(this.getRectangle())){
+			blood.setLive(false);
+			this.life += 20;
+			if(this.life>100){
+				this.life = 100;
+			}
+			return true;
+		}
+		return false;
+	}
+
 	private boolean collidesWithTanks(List<Tank> tanks) {
 		for(int i=0;i<tanks.size();i++){
 			if(tanks.get(i)!=this && collidesWithTank(tanks.get(i))){
@@ -164,10 +181,13 @@ public class Tank {
 	}
 
 	private void preventOut() {
-		if(x<0) x=0;
-		if(y<30) y=30;
-		if(x>TankClient.GAME_WIDTH-Tank.WIDTH) x=TankClient.GAME_WIDTH-Tank.WIDTH;
-		if(y>TankClient.GAME_HEIGHT-Tank.HEIGHT) y=TankClient.GAME_HEIGHT-Tank.HEIGHT;
+//		if(x<0) x=0;
+//		if(y<30) y=30;
+//		if(x>TankClient.GAME_WIDTH-Tank.WIDTH) x=TankClient.GAME_WIDTH-Tank.WIDTH;
+//		if(y>TankClient.GAME_HEIGHT-Tank.HEIGHT) y=TankClient.GAME_HEIGHT-Tank.HEIGHT;
+		if(x<0 ||y<30||x>TankClient.GAME_WIDTH-Tank.WIDTH||y>TankClient.GAME_HEIGHT-Tank.HEIGHT){
+			stay();
+		}
 	}
 
 	
@@ -216,6 +236,9 @@ public class Tank {
 		case KeyEvent.VK_CONTROL:
 			fire();
 			break;
+		case KeyEvent.VK_A:
+			superFire();
+			break;
 		case KeyEvent.VK_LEFT:
 			bL=false;
 			break;
@@ -252,6 +275,25 @@ public class Tank {
 		tc.getMissiles().add(m);
 		return m;
 	}
+	
+	private Missile fire(Direction dir) {
+		if(!this.live) return null;
+		int x = this.x + Tank.WIDTH/2 - Missile.WIDTH/2;
+		int y = this.y + Tank.HEIGHT/2 - Missile.HEIGHT/2;
+		Missile m = new Missile(x,y,good,dir,tc);
+		tc.getMissiles().add(m);
+		return m;
+	}
+	
+	private List<Missile> superFire(){
+		Direction[] dirs = Direction.values();
+		List<Missile> missiles = new ArrayList<Missile>();
+		for(int i=0;i<8;i++){
+			missiles.add(fire(dirs[i]));
+		}
+		return missiles;
+	}
+
 	public Rectangle getRectangle(){
 		return new Rectangle(x,y,WIDTH,HEIGHT);
 	}
@@ -266,5 +308,31 @@ public class Tank {
 
 	public boolean isGood() {
 		return good;
+	}
+
+	public int getLife() {
+		return life;
+	}
+
+	public void setLife(int life) {
+		this.life = life;
+	}
+	
+	private class BloodBar{
+		private final int totalWidth = Tank.WIDTH;
+		private final int borderWidth = 1;
+		private final int innerWidth = totalWidth - borderWidth * 2;
+		private final int innerHeight = 4;
+		private final int totalHeight = innerHeight + borderWidth * 2;
+		private final Color borderColor = Color.WHITE;
+		private final Color innerColor = Color.RED;
+		public void draw(Graphics g){
+			Color c = g.getColor();
+			g.setColor(borderColor);
+			g.drawRect(x, y-totalHeight, totalWidth, totalHeight);
+			g.setColor(innerColor);
+			g.fillRect(x+borderWidth, y-totalHeight+borderWidth, innerWidth*life/100+1, innerHeight+1);
+			g.setColor(c);
+		}
 	}
 }
