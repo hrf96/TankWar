@@ -2,17 +2,19 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.Random;
 
 
 public class Tank {
-	public static final int XSPEED = 5;
-	public static final int YSPEED = 5;
+	public static final int XSPEED = 3;
+	public static final int YSPEED = 3;
 	public static final int WIDTH = 30;
 	public static final int HEIGHT = 30;
 	private static Random random = new Random();
 	
 	private int x,y;
+	private int oldX,oldY;
 	private boolean bL = false,bU = false,bR = false,bD = false;
 	private boolean good;
 	private boolean live = true;
@@ -25,6 +27,8 @@ public class Tank {
 	public Tank(int x, int y,boolean good) {
 		this.x = x;
 		this.y = y;
+		this.oldX = x;
+		this.oldY = y;
 		this.good = good;
 	}
 	
@@ -76,7 +80,10 @@ public class Tank {
 	}
 	
 	
+	
 	void move(){
+		this.oldX = this.x;
+		this.oldY = this.y;
 		switch(dir){
 		case L:
 			x-=XSPEED;
@@ -110,11 +117,15 @@ public class Tank {
 			break;
 		}
 		if(dir!=Direction.STOP) ptDir = dir;
-		if(x<0) x=0;
-		if(y<30) y=30;
-		if(x>TankClient.GAME_WIDTH-Tank.WIDTH) x=TankClient.GAME_WIDTH-Tank.WIDTH;
-		if(y>TankClient.GAME_HEIGHT-Tank.HEIGHT) y=TankClient.GAME_HEIGHT-Tank.HEIGHT;
 		
+		//限制坦克的活动范围
+		preventOut();
+		//防止坦克撞墙
+		collidesWithWalls(tc.getWalls());
+		//防止坦克互相穿越
+		collidesWithTanks(tc.getEnemies());
+		collidesWithTank(tc.getMyTank());
+		//设置敌方坦克自动行走和自动发射子弹
 		if(!good){
 			Direction[] dirs = Direction.values();
 			if(step==0){
@@ -126,8 +137,63 @@ public class Tank {
 				this.fire();
 			}
 		}
-	}
+	}	
 	
+	
+	
+	
+	
+	
+	
+	private boolean collidesWithTanks(List<Tank> tanks) {
+		for(int i=0;i<tanks.size();i++){
+			if(tanks.get(i)!=this && collidesWithTank(tanks.get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean collidesWithTank(Tank tank) {
+		if(tank != this && tank.getRectangle().intersects(this.getRectangle())){
+			stay();
+			tank.stay();
+			return true;
+		}
+		return false;
+	}
+
+	private void preventOut() {
+		if(x<0) x=0;
+		if(y<30) y=30;
+		if(x>TankClient.GAME_WIDTH-Tank.WIDTH) x=TankClient.GAME_WIDTH-Tank.WIDTH;
+		if(y>TankClient.GAME_HEIGHT-Tank.HEIGHT) y=TankClient.GAME_HEIGHT-Tank.HEIGHT;
+	}
+
+	
+	private boolean collidesWithWalls(List<Wall> walls) {
+		for(int i=0;i<walls.size();i++){
+			if(collidesWithWall(walls.get(i))){
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	
+	private boolean collidesWithWall(Wall wall) {
+		if(this.isLive() && wall.getRectangle().intersects(this.getRectangle())){
+			stay();
+		}
+		return false;
+	}
+
+	private void stay() {
+		this.x = this.oldX;
+		this.y = this.oldY;
+	}
+
 	public void keyPressed(KeyEvent e){
 		switch(e.getKeyCode()){
 		case KeyEvent.VK_LEFT:

@@ -8,8 +8,8 @@ import java.util.List;
 public class Missile {
 	public static final int WIDTH = 10;
 	public static final int HEIGHT = 10;
-	public static final int XSPEED = 10;
-	public static final int YSPEED = 10;
+	public static final int XSPEED = 5;
+	public static final int YSPEED = 5;
 	private boolean live = true;
 	private boolean good;
 	private int x,y;
@@ -77,8 +77,31 @@ public class Missile {
 		hitTanks(tc.getEnemies());
 		hitTank(tc.getMyTank());
 		
+		hitWalls(tc.getWalls());
+		
 	}
 	
+	private boolean hitWalls(List<Wall> walls) {
+		for(int i=0;i<walls.size();i++){
+			if(hitWall(walls.get(i))){
+				tc.getMissiles().remove(this);
+				return true;
+			}
+		}
+		return false;
+	}
+
+
+	private boolean hitWall(Wall wall) {
+		if(this.isLive() && wall.isLive() && wall.getRectangle().intersects(this.getRectangle())){
+			this.live = false;
+			tc.getMissiles().remove(this);
+			return true;
+		}
+		return false;
+	}
+
+
 	private boolean hitTanks(List<Tank> tanks) {
 		for(int i=0;i<tanks.size();i++){
 			if(hitTank(tanks.get(i))){
@@ -90,7 +113,7 @@ public class Missile {
 
 
 	public boolean hitTank(Tank tank){
-		if(this.isLive() && tank.isLive() && tank.getRectangle().intersects(this.getRectangle()) && tank.isLive() && this.good != tank.isGood()) {
+		if(this.isLive() && tank.getRectangle().intersects(this.getRectangle()) && tank.isLive() && this.good != tank.isGood()) {
 			this.live = false;
 			this.tc.getMissiles().remove(this);
 			tank.setLive(false);

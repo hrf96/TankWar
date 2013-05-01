@@ -19,6 +19,7 @@ public class TankClient extends Frame{
 	private List<Tank> enemies = new ArrayList<Tank>();
 	private List<Explode> explodes = new ArrayList<Explode>();
 	private List<Missile> missiles = new ArrayList<Missile>();
+	private List<Wall> walls = new ArrayList<Wall>();
 	private Image offScreenImage = null;
 	
 
@@ -29,7 +30,13 @@ public class TankClient extends Frame{
 		g.drawString("Explodes count:" + explodes.size(), 10, 70);
 		g.drawString("Enemies count:" + enemies.size(), 10, 90);
 		
-		
+		//循环画出墙
+		for(int i=0;i<walls.size();i++){
+			Wall w = walls.get(i);
+			if(w.isLive()){
+				w.draw(g);
+			}
+		}
 		myTank.draw(g);
 		
 		//循环画出子弹
@@ -72,12 +79,18 @@ public class TankClient extends Frame{
 	}
 	
 	public void lanchFrame(){
-		enemies.add(new Tank(50,100,false,Tank.Direction.D,this));
-		enemies.add(new Tank(150,100,false,Tank.Direction.D,this));
-		enemies.add(new Tank(250,100,false,Tank.Direction.D,this));
-		enemies.add(new Tank(350,100,false,Tank.Direction.D,this));
-		enemies.add(new Tank(450,100,false,Tank.Direction.D,this));
-		enemies.add(new Tank(550,100,false,Tank.Direction.D,this));
+		
+		//添加墙
+		walls.add(new Wall(70,200,20,200,this));
+		walls.add(new Wall(170,300,250,20,this));
+		walls.add(new Wall(270,200,20,100,this));
+		walls.add(new Wall(370,200,20,100,this));
+		
+		//添加敌方坦克
+		for(int i=0;i<6;i++){
+			enemies.add(new Tank(50 + i * 100,100,false,Tank.Direction.D,this));
+		}
+		
 		
 		this.setLocation(100, 100);
 		this.setSize(GAME_WIDTH, GAME_HEIGHT);
@@ -147,6 +160,10 @@ public class TankClient extends Frame{
 
 	public List<Tank> getEnemies() {
 		return enemies;
+	}
+
+	public List<Wall> getWalls() {
+		return walls;
 	}
 	
 	
