@@ -15,7 +15,7 @@ public class TankClient extends Frame{
 	private static final long serialVersionUID = 1L;
 	public static final int GAME_WIDTH = 640;
 	public static final int GAME_HEIGHT = 480;
-	private Tank myTank = new Tank(50,50,true,this);
+	private Tank myTank = new Tank(50,50,true,Tank.Direction.STOP,this);
 	private List<Tank> enemies = new ArrayList<Tank>();
 	private List<Explode> explodes = new ArrayList<Explode>();
 	private List<Missile> missiles = new ArrayList<Missile>();
@@ -72,12 +72,12 @@ public class TankClient extends Frame{
 	}
 	
 	public void lanchFrame(){
-		enemies.add(new Tank(50,100,false,this));
-		enemies.add(new Tank(150,100,false,this));
-		enemies.add(new Tank(250,100,false,this));
-		enemies.add(new Tank(350,100,false,this));
-		enemies.add(new Tank(450,100,false,this));
-		enemies.add(new Tank(550,100,false,this));
+		enemies.add(new Tank(50,100,false,Tank.Direction.D,this));
+		enemies.add(new Tank(150,100,false,Tank.Direction.D,this));
+		enemies.add(new Tank(250,100,false,Tank.Direction.D,this));
+		enemies.add(new Tank(350,100,false,Tank.Direction.D,this));
+		enemies.add(new Tank(450,100,false,Tank.Direction.D,this));
+		enemies.add(new Tank(550,100,false,Tank.Direction.D,this));
 		
 		this.setLocation(100, 100);
 		this.setSize(GAME_WIDTH, GAME_HEIGHT);

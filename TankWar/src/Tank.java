@@ -2,6 +2,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
+import java.util.Random;
 
 
 public class Tank {
@@ -9,11 +10,13 @@ public class Tank {
 	public static final int YSPEED = 5;
 	public static final int WIDTH = 30;
 	public static final int HEIGHT = 30;
+	private static Random random = new Random();
 	
 	private int x,y;
 	private boolean bL = false,bU = false,bR = false,bD = false;
 	private boolean good;
 	private boolean live = true;
+	private int step = random.nextInt(12) + 1;
 
 	enum Direction {L,LU,U,RU,R,RD,D,LD,STOP};
 	private Direction dir = Direction.STOP;
@@ -25,8 +28,9 @@ public class Tank {
 		this.good = good;
 	}
 	
-	public Tank(int x, int y,boolean good,TankClient tc) {
+	public Tank(int x, int y,boolean good,Direction dir,TankClient tc) {
 		this(x, y,good);
+		this.dir = dir;
 		this.tc=tc;
 	}
 	
@@ -38,6 +42,8 @@ public class Tank {
 		else{
 			g.setColor(Color.BLUE);
 		}
+		
+		if(!this.live) return;
 		g.fillOval(x, y, WIDTH, HEIGHT);
 		g.setColor(c);
 		move();
@@ -109,6 +115,17 @@ public class Tank {
 		if(x>TankClient.GAME_WIDTH-Tank.WIDTH) x=TankClient.GAME_WIDTH-Tank.WIDTH;
 		if(y>TankClient.GAME_HEIGHT-Tank.HEIGHT) y=TankClient.GAME_HEIGHT-Tank.HEIGHT;
 		
+		if(!good){
+			Direction[] dirs = Direction.values();
+			if(step==0){
+				this.step = random.nextInt(12) +1;
+				this.dir = dirs[random.nextInt(dirs.length)];
+			}
+			step--;
+			if(random.nextInt(40)>38){
+				this.fire();
+			}
+		}
 	}
 	
 	public void keyPressed(KeyEvent e){
@@ -162,9 +179,10 @@ public class Tank {
 	}
 
 	private Missile fire(){
+		if(!this.live) return null;
 		int x = this.x + Tank.WIDTH/2 - Missile.WIDTH/2;
 		int y = this.y + Tank.HEIGHT/2 - Missile.HEIGHT/2;
-		Missile m = new Missile(x,y,ptDir,tc);
+		Missile m = new Missile(x,y,good,ptDir,tc);
 		tc.getMissiles().add(m);
 		return m;
 	}
@@ -178,5 +196,9 @@ public class Tank {
 
 	public void setLive(boolean live) {
 		this.live = live;
+	}
+
+	public boolean isGood() {
+		return good;
 	}
 }

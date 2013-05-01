@@ -11,7 +11,7 @@ public class Missile {
 	public static final int XSPEED = 10;
 	public static final int YSPEED = 10;
 	private boolean live = true;
-
+	private boolean good;
 	private int x,y;
 	private Tank.Direction dir;
 	private TankClient tc;
@@ -23,8 +23,9 @@ public class Missile {
 	}
 	
 	
-	public Missile(int x, int y, Tank.Direction dir,TankClient tc) {
+	public Missile(int x, int y, boolean good ,Tank.Direction dir,TankClient tc) {
 		this(x,y,dir);
+		this.good = good;
 		this.tc=tc;
 	}
 	
@@ -74,6 +75,7 @@ public class Missile {
 		
 		
 		hitTanks(tc.getEnemies());
+		hitTank(tc.getMyTank());
 		
 	}
 	
@@ -88,7 +90,7 @@ public class Missile {
 
 
 	public boolean hitTank(Tank tank){
-		if(tank.getRectangle().intersects(this.getRectangle())&&tank.isLive()) {
+		if(this.isLive() && tank.isLive() && tank.getRectangle().intersects(this.getRectangle()) && tank.isLive() && this.good != tank.isGood()) {
 			this.live = false;
 			this.tc.getMissiles().remove(this);
 			tank.setLive(false);
