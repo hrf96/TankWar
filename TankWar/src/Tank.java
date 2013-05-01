@@ -17,8 +17,6 @@ public class Tank {
 	private boolean good;
 	private boolean live = true;
 	private int step = random.nextInt(12) + 1;
-
-	enum Direction {L,LU,U,RU,R,RD,D,LD,STOP};
 	private Direction dir = Direction.STOP;
 	private Direction ptDir = Direction.R;
 	private TankClient tc;
