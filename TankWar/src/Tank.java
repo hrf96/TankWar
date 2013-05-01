@@ -201,7 +201,11 @@ public class Tank {
 	}
 
 
-	
+	/**
+	 * 撞墙
+	 * @param wall 被撞得墙
+	 * @return 撞上了返回true，否则false
+	 */
 	private boolean collidesWithWall(Wall wall) {
 		if(this.isLive() && wall.getRectangle().intersects(this.getRectangle())){
 			stay();

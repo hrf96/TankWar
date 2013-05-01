@@ -9,13 +9,22 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-//import Tank.Direction;
 
-
+/**
+ * 这个类的作用是坦克游戏的主窗口
+ * @author hanrunfan
+ *
+ */
 public class TankClient extends Frame{
 
 	private static final long serialVersionUID = 1L;
+	/**
+	 * 整个坦克游戏的宽度
+	 */
 	public static final int GAME_WIDTH = 640;
+	/**
+	 * 整个坦克游戏的高度
+	 */
 	public static final int GAME_HEIGHT = 480;
 	private Tank myTank = new Tank(50,50,true,Tank.Direction.STOP,this);
 	private List<Tank> enemies = new ArrayList<Tank>();
@@ -93,6 +102,12 @@ public class TankClient extends Frame{
 		g.drawImage(offScreenImage, 0, 0, null);
 	}
 	
+	
+	
+	
+	/**
+	 * 本方法显示坦克主窗口，初始化数据
+	 */
 	public void lanchFrame(){
 		
 		//添加墙
